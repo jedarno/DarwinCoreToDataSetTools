@@ -45,7 +45,7 @@ def download_sample(directory, sample_df, label_id, replacement_df):
   for i in range(0, len(labels)):
     class_folder = labels[i]
     image_name = "image-{}-{}".format(gbif_ids[i], i)
-    path = "train/{}/{}.png".format(class_folder, image_name)
+    path = "{}/train/{}/{}.png".format(directory, class_folder, image_name)
 
     try:
       download_image(image_links[i], path)
@@ -74,6 +74,28 @@ def download_sample(directory, sample_df, label_id, replacement_df):
       else:
         missing_images.append(labels[i])
 
+def split_test_images(directory, labels):
+  
+  for label in labels:
+    train_path = "{}/train/{}".format(directory, label)
+    test_path = "{}/test/{}".format(directory, label)
 
+    try:
+      images = [img for img in os.listdir(train_path)]
+    except:
+      print("Warning! folder not found at {}".format(train_path))
 
+    num_samples = int(np.floor(len(images) + 0.1))
+
+    if num_samples == 0:
+      num_samples = 1
+
+    test_images = choice(images, num_samples, replace=False)
+
+    for image in test_images:
+      
+      try:
+        os.replace("{}/train/{}/{}".format(directory, sepcies, image),  "{}/test/{}/{}".format(directory, species, image))
+      except:
+        print("image move failed {}".format(image))
 
