@@ -27,3 +27,27 @@ def get_taxa_freq(taxa_data_frame: pd.core.frame.DataFrame | str):
   families_freq.to_csv('./freq_tables/families_freq.csv')
   genera_freq.to_csv('./freq_tables/genera_freq.csv')
   species_freq.to_csv('./freq_tables/species_freq.csv')
+
+def sample(df: pd.core.frame.DataFrame, ut: int, lt: int, label_col: str, labels: list, label_freq: list) -> pd.core.frame.DataFrame:
+  if label_freq[0] > upper_threshold:
+    sample = df[df[label_col] == labels[0]].sample(upper_threshold, replace = False)
+  elif label_freq[0] > lower_threshold:
+    sample = df[df[label_col] == labels[0]]
+  else:
+    sample = pd.DataFrame({'gbifID' : []})
+
+  for i in range(1,len(labels)):
+
+    if label_freq[i] > lower_threshold:
+  
+      if label_freq[i] > 100:
+        label_sample = df[df[label_col] == labels[i]].sample(upper_threshold, replace = False)
+            
+      else:
+        label_sample = df[df[label_col] == labels[i]]
+
+      sample = pd.concat([sample, label_sample],axis=0)
+
+  return sample
+
+
