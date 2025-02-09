@@ -1,6 +1,7 @@
 """  
 Copyright (c) 2019-present NAVER Corp.
 MIT License
+file from from https://github.com/clovaai/CRAFT-pytorch
 """
 
 # -*- coding: utf-8 -*-

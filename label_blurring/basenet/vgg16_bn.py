@@ -4,7 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 from torchvision import models
-#from torchvision.models.vgg import model_urls
+
+# File from https://github.com/clovaai/CRAFT-pytorch
+# Forked and updated to work on Pytorch>0.18 at https://github.com/jedarno/CRAFT-pytorch
 
 model_urls = {
     'vgg16_bn': 'https://download.pytorch.org/models/vgg16_bn-6c64b313.pth',

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# File from https://github.com/clovaai/CRAFT-pytorch
 import os
 import numpy as np
 import cv2
