@@ -2,6 +2,8 @@ import pandas as pd
 import os 
 import urllib.request
 
+from typing import Union
+
 def observations_to_df(observations_file: str, multimedia_file: str, delim: str = '\t', save_to: str = None) -> pd.core.frame.DataFrame:
 
   occurence_table = pd.read_csv(observations_file, delimiter=delim)
@@ -16,7 +18,7 @@ def observations_to_df(observations_file: str, multimedia_file: str, delim: str 
 
   return data
 
-def get_taxa_freq(taxa_data_frame: pd.core.frame.DataFrame | str):
+def get_taxa_freq(taxa_data_frame: Union[pd.core.frame.DataFrame, str]):
   
   if type(taxa_data_frame == str):
     taxa_data_frame = pd.read_csv(taxa_data_frame)
@@ -29,24 +31,25 @@ def get_taxa_freq(taxa_data_frame: pd.core.frame.DataFrame | str):
   species_freq.to_csv('./freq_tables/species_freq.csv')
 
 def sample(df: pd.core.frame.DataFrame, ut: int, lt: int, label_col: str, labels: list, label_freq: list) -> pd.core.frame.DataFrame:
-  if label_freq[0] > upper_threshold:
+
+  if label_freq[0] > ut:
     sample = df[df[label_col] == labels[0]].sample(upper_threshold, replace = False)
-  elif label_freq[0] > lower_threshold:
+  elif label_freq[0] > lt:
     sample = df[df[label_col] == labels[0]]
   else:
     sample = pd.DataFrame({'gbifID' : []})
 
   for i in range(1,len(labels)):
 
-    if label_freq[i] > lower_threshold:
-  
-      if label_freq[i] > 100:
+    if label_freq[i] > lt:
+
+      if label_freq[i] > ut:
         label_sample = df[df[label_col] == labels[i]].sample(upper_threshold, replace = False)
             
       else:
         label_sample = df[df[label_col] == labels[i]]
 
-      sample = pd.concat([sample, label_sample],axis=0)
+      sample = pd.concat([sample, label_sample], axis=0)
 
   return sample
 
