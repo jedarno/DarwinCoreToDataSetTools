@@ -54,7 +54,7 @@ def download_sample(directory, sample_df, label_id, replacement_df):
       replaced = False
       alternative_images = replacement_df[ (replacement_df[label_id] == labels[i]) & (~replacement_df['gbifID'].isin(gbif_ids)) ]
       
-      if len(alternative_imags > 0):
+      if len(alternative_images > 0):
 
         for j in range (0, len(alternative_images)):
 
