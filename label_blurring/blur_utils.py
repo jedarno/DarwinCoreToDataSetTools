@@ -12,13 +12,24 @@ from torch.autograd import Variable
 
 from PIL import Image
 
-import craft_utils
-import imgproc
-import file_utils
+from . import craft_utils
+from . import imgproc
+from . import file_utils
 
-from craft import CRAFT
+from .craft import CRAFT
 
 from collections import OrderedDict
+
+def copyStateDict(state_dict):
+    if list(state_dict.keys())[0].startswith("module"):
+        start_idx = 1
+    else:
+        start_idx = 0
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = ".".join(k.split(".")[start_idx:])
+        new_state_dict[name] = v
+    return new_state_dict
 
 def add_margin(poly, margin):
   """
@@ -94,11 +105,11 @@ def CRAFT_inference(craft_model, image, text_threshold=0.4, link_threshold=0.4, 
   t0=time.time()
 
   #resize
-  img_resized, target_ratio, size_heatmap = resize_aspect_ratio(image, canvas_size, interpolation=cv2.INTER_LINEAR, mag_ratio=1.5)
+  img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, canvas_size, interpolation=cv2.INTER_LINEAR, mag_ratio=1.5)
   ratio_h = ratio_w = 1 / target_ratio
 
   #preprocessing
-  x = normalizeMeanVariance(img_resized)
+  x = imgproc.normalizeMeanVariance(img_resized)
   x = torch.from_numpy(x).permute(2,0,1) #[h,w,c] to [c,h,w]
   x = Variable(x.unsqueeze(0)) #[c,h,w] to [b,c,h,w]
   if cuda:
@@ -127,13 +138,43 @@ def CRAFT_inference(craft_model, image, text_threshold=0.4, link_threshold=0.4, 
 
   return boxes, polys, score_text
 
-def CRAFT_Blur_directory(model, directory, margin=12, cuda=True):
+def blur_and_save(img_file, img, boxes, margin, dirname="./blurred_images/"):
+  img = np.array(img)
+
+  #make result file list
+  filename, file_ext = os.path.splitext(os.path.basename(img_file))
+
+  # result directory
+  blurred_img_file = dirname + filename + ".png" #Using png instead of jpg
+
+  if not os.path.isdir(dirname):
+    os.mkdir(dirname)
+
+  #Initiate mask
+  mask = np.zeros_like(img)
+  start_point = (1050, 1600)
+  end_point = (1600, 0)
+  mask = cv2.rectangle(mask, start_point, end_point, (255, 255, 255), -1) #blur side bar thing?
+  m_boxes = _mask_merge_text_regions(boxes, margin)
+  for i, box in enumerate(m_boxes):
+    poly = np.array(box).astype(np.int32).reshape((-1))
+    poly = poly.reshape(-1, 2)
+    #cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=2) We replace this with mask generation :)
+    cv2.fillPoly(mask, [poly.reshape((-1, 1, 2))], color=(255, 255, 255))
+    pt_color = (0,255,255)
+    blurred_img_1000 = cv2.GaussianBlur(img, (51, 51), 1000)
+    out = np.where(mask!=(255, 255, 255), img, blurred_img_1000)
+
+  #save result
+  cv2.imwrite(blurred_img_file, out)
+
+def CRAFT_Blur_directory(model, directory, margin=12, cuda=True, res_dirname="./blurred_images/"):
 
   #generate image list from directory passed
-  image_list, _, _ = file_utils.get_files(test_folder)
+  image_list, _, _ = file_utils.get_files(directory)
 
   #check if results folder exists
-  results_folder = './results/'
+  results_folder = res_dirname
   if not os.path.isdir(results_folder):
       os.mkdir(results_folder)
 
@@ -153,7 +194,7 @@ def CRAFT_Blur_directory(model, directory, margin=12, cuda=True):
     image = imgproc.loadImage(image_path)
     bboxes, polys, score_text = CRAFT_inference(craft_model, image)
 
-    blur_and_save(image_path, image[:,:,::-1], polys, margin)
+    blur_and_save(image_path, image[:,:,::-1], polys, margin, res_dirname)
 
   print("elapsed time : {}s".format(time.time() - t))
 
