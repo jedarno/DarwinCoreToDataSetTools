@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import requests
 
@@ -90,12 +91,12 @@ def split_test_images(directory, labels):
     if num_samples == 0:
       num_samples = 1
 
-    test_images = choice(images, num_samples, replace=False)
+    test_images = np.random.choice(images, num_samples, replace=False)
 
     for image in test_images:
       
       try:
-        os.replace("{}/train/{}/{}".format(directory, sepcies, image),  "{}/test/{}/{}".format(directory, species, image))
+        os.replace("{}/train/{}/{}".format(directory, label, image),  "{}/test/{}/{}".format(directory, label, image))
       except:
         print("image move failed {}".format(image))
 
