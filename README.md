@@ -8,4 +8,4 @@ The pipeline includes methods for: (1) **Balanced Dataset Generation:** Mitigate
 
 ## Example
 See Example.ipynb
-## Set Up 
+
