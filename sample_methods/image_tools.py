@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 import os
 import requests
@@ -32,7 +33,27 @@ def download_image(image_link: str, path: str):
   image = cv2.resize(image, (1090, 1600))
   cv2.imwrite(path, image)
 
-def download_sample(directory, sample_df, label_id, replacement_df):
+def _resample(replacement_df, label_id):
+  alternative_images = replacement_df[ (replacement_df[label_id] == labels[i]) & (~replacement_df['gbifID'].isin(gbif_ids)) ]
+      
+  if len(alternative_images > 0):
+
+    for j in range (0, len(alternative_images)):
+
+      try:
+        alt_image_name = "image-{}-{}".format(alternative_images.iloc[j]['gbifID'], j)
+        alt_path = "train/{}/{}.png".format(class_folder, alt_image_name)
+        download_image(alternative_images.iloc[j]['identifier'], alt_path)
+        replaced = True
+        return True
+
+      except Exception as e:
+        print("Exception {} at link {}".format(e, alternatve_images.iloc[j]['identifier']))
+  
+  return False
+
+
+def download_sample(directory, sample_df, label_id, replacement_df = False):
   """
   Donwload image links from sample into the dataset directory
   """
@@ -51,29 +72,15 @@ def download_sample(directory, sample_df, label_id, replacement_df):
     try:
       download_image(image_links[i], path)
     except Exception as e:
-      broken_links.append(i)
-      replaced = False
-      alternative_images = replacement_df[ (replacement_df[label_id] == labels[i]) & (~replacement_df['gbifID'].isin(gbif_ids)) ]
-      
-      if len(alternative_images > 0):
+      print("Exception {} at link {}".format(e, image_links.iloc[i]['identifier']))
 
-        for j in range (0, len(alternative_images)):
+      if (replacement_df):
+        broken_links.append(i)
+        replaced = _resample(replacement_df, label_id)
 
-          try:
-            alt_image_name = "image-{}-{}".format(alternative_images.iloc[j]['gbifID'], j)
-            alt_path = "train/{}/{}.png".format(class_folder, alt_image_name)
-            download_image(alternative_images.iloc[j]['identifier'], alt_path)
-            replaced = True
-            break
-
-          except Exception as e:
-            print("Exception {} at link {}".format(e, alternatve_images.iloc[j]['identifier']))
-
-        if not replaced:
-          missing_images.append(labels[i])
-
-      else:
-        missing_images.append(labels[i])
+        if replaced == True:
+          print("Replacement image found")
+       
 
 def split_test_images(directory, labels):
   
