@@ -33,7 +33,7 @@ def get_taxa_freq(taxa_data_frame: Union[pd.core.frame.DataFrame, str]):
 def sample(df: pd.core.frame.DataFrame, ut: int, lt: int, label_col: str, labels: list, label_freq: list) -> pd.core.frame.DataFrame:
 
   if label_freq[0] > ut:
-    sample = df[df[label_col] == labels[0]].sample(upper_threshold, replace = False)
+    sample = df[df[label_col] == labels[0]].sample(ut, replace = False)
   elif label_freq[0] > lt:
     sample = df[df[label_col] == labels[0]]
   else:
@@ -44,7 +44,7 @@ def sample(df: pd.core.frame.DataFrame, ut: int, lt: int, label_col: str, labels
     if label_freq[i] > lt:
 
       if label_freq[i] > ut:
-        label_sample = df[df[label_col] == labels[i]].sample(upper_threshold, replace = False)
+        label_sample = df[df[label_col] == labels[i]].sample(ut, replace = False)
             
       else:
         label_sample = df[df[label_col] == labels[i]]
