@@ -93,7 +93,7 @@ def split_test_images(directory, labels):
     except:
       print("Warning! folder not found at {}".format(train_path))
 
-    num_samples = int(np.floor(len(images) + 0.1))
+    num_samples = int(np.floor(len(images) * 0.1))
 
     if num_samples == 0:
       num_samples = 1
