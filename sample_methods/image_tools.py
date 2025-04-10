@@ -107,3 +107,29 @@ def split_test_images(directory, labels):
       except:
         print("image move failed {}".format(image))
 
+def split_val_images(directory, labels):
+
+  for label in labels:
+    train_path = "{}/train/{}".format(directory, label)
+    val_path = "{}/val/{}".format(directory, label)
+
+    try:
+      images = [img for img in of.listdir(train_path)]
+    except:
+      print("Warning! folder not found at {}".format(train_path))
+
+    num_samples = int(np.floor(len(images) * 0.2))
+
+    if num_samples == 0:
+      num_samples = 1
+
+    val_images = np.random.choice(images, num_samples, replace=False)
+
+    for image in val_images:
+
+      try:
+        os.replace("{}/train/{}/{}".format(directory, label, image), "{}/val/{}/{}".format(directory, label, image))
+      except:
+        print("image move failed {}".format(image))
+
+
