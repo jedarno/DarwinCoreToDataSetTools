@@ -10,14 +10,22 @@ def build_image_dir(labels: list, folder_location: str = "images"):
 
   if not os.path.exists(folder_location + "/train/"):
    os.makedirs(folder_location + "/train/")
+
   if not os.path.exists(folder_location + "/test/"):
    os.makedirs(folder_location + "/test/")
+
+  if not os.path.exists(folder_location + "val/"):
+    os.makedirs(folder_location + "/val/")
 
   for label in labels:
     if not os.path.exists(folder_location + "/train/" + label):
       os.makedirs(folder_location + "/train/" + label)
+
     if not os.path.exists(folder_location + "/test/" + label):
       os.makedirs(folder_location + "/test/" + label)
+
+    if not os.path.exists(folder_location + "/val/" + label):
+      os.makedirs(folder_location + "/val/" + label)
 
 def download_image(image_link: str, path: str):
   """
