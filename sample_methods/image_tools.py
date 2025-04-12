@@ -122,7 +122,7 @@ def split_val_images(directory, labels, val_size=0.2):
     val_path = "{}/val/{}".format(directory, label)
 
     try:
-      images = [img for img in of.listdir(train_path)]
+      images = [img for img in os.listdir(train_path)]
     except:
       raise Exception("Warning! folder not found at {}".format(train_path))
 
