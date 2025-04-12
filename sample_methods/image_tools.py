@@ -14,7 +14,7 @@ def build_image_dir(labels: list, folder_location: str = "images"):
   if not os.path.exists(folder_location + "/test/"):
    os.makedirs(folder_location + "/test/")
 
-  if not os.path.exists(folder_location + "val/"):
+  if not os.path.exists(folder_location + "/val/"):
     os.makedirs(folder_location + "/val/")
 
   for label in labels:
@@ -99,7 +99,7 @@ def split_test_images(directory, labels):
     try:
       images = [img for img in os.listdir(train_path)]
     except:
-      print("Warning! folder not found at {}".format(train_path))
+      raise Exception("Warning! folder not found at {}".format(train_path))
 
     num_samples = int(np.floor(len(images) * 0.1))
 
@@ -115,7 +115,7 @@ def split_test_images(directory, labels):
       except:
         print("image move failed {}".format(image))
 
-def split_val_images(directory, labels):
+def split_val_images(directory, labels, val_size=0.2):
 
   for label in labels:
     train_path = "{}/train/{}".format(directory, label)
@@ -124,9 +124,9 @@ def split_val_images(directory, labels):
     try:
       images = [img for img in of.listdir(train_path)]
     except:
-      print("Warning! folder not found at {}".format(train_path))
+      raise Exception("Warning! folder not found at {}".format(train_path))
 
-    num_samples = int(np.floor(len(images) * 0.2))
+    num_samples = int(np.floor(len(images) * val_size))
 
     if num_samples == 0:
       num_samples = 1
