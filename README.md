@@ -18,3 +18,9 @@ The pipeline includes methods for:
 ## Example
 See Example.ipynb
 
+To use this example the model weights linked below need to be downloaded and placed in the folder label_blurring/CRAFT_models
+
+## CRAFT weights
+Official github: https://github.com/clovaai/CRAFT-pytorch
+craft_mlt_25 weights: https://drive.google.com/file/d/1Jk4eGD7crsqCCg9C9VjCLkMN3ze8kutZ/view
+
