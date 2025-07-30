@@ -1,0 +1,2 @@
+When using this dataset please use the following citation and pay attention to the rights documented in rights.txt:
+Royal Botanic Gardens, Kew (2025). Royal Botanic Gardens, Kew - Herbarium Specimens. Occurrence dataset https://doi.org/10.15468/ly60bx accessed via GBIF.org on 2025-07-30.

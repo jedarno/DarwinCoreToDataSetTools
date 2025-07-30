@@ -1,0 +1,2 @@
+Dataset: Royal Botanic Gardens, Kew - Herbarium Specimens 
+Rights as supplied: http://creativecommons.org/licenses/by/4.0/legalcode
